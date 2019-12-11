@@ -7,9 +7,11 @@ using Microsoft.Extensions.Logging;
 using DatingApp.API.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Web.Http.Cors;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DatingApp.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     //[EnableCors(origins:"*", headers:"*", methods:"*")]        // Default policy.
@@ -35,6 +37,7 @@ namespace DatingApp.API.Controllers
              var values = await _context.Values.ToListAsync();
              return Ok(values);
         }
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetValue(int id)
         {

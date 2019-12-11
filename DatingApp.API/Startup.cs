@@ -13,6 +13,9 @@ using Microsoft.Extensions.Logging;
 using DatingApp.API.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Web.Http.Cors;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace DatingApp.API
 {
@@ -35,6 +38,20 @@ namespace DatingApp.API
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             //agregando cabeceras cors para que permite que se consuma desde modo local
             services.AddCors();  
+            //REgistrando servicio para injectar a los contralores el repositorio
+            //Toma como parametero la interfaz y la clase de repositorio
+            services.AddScoped<IAuthRepository, AuthRepository>();
+            //agregando autenticacion 
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options => {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
       
         }
 
@@ -51,7 +68,8 @@ namespace DatingApp.API
             app.UseRouting();
             //Agregando core , en este orden porque si no no funciona
             app.UseCors(x=>x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-
+            //Agregando la autenticacion de json token
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
