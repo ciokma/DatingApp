@@ -31,6 +31,7 @@ namespace DatingApp.API.Controllers
         }
         */
              // [EnableCors(origins:"*", headers:"*", methods:"*")]        // Default policy.
+        [AllowAnonymous]
         [AcceptVerbs("Get", "POST")]
         public async Task<IActionResult> GetValues()
         {
