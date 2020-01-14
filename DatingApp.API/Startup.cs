@@ -40,6 +40,8 @@ namespace DatingApp.API
             services.AddDbContext<DataContext>(x =>x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllers();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            //agregando migracion
+            services.AddTransient<Seed>();
             //agregando cabeceras cors para que permite que se consuma desde modo local
             services.AddCors();  
             //REgistrando servicio para injectar a los contralores el repositorio
@@ -60,7 +62,7 @@ namespace DatingApp.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Seed seeder)
         {
             if (env.IsDevelopment())
             {
@@ -83,6 +85,8 @@ namespace DatingApp.API
             app.UseHttpsRedirection();
          
             app.UseRouting();
+            //agregando migracion
+            //seeder.SeedUser(); //comentado para que no se este haciendo la migracion en cada momento
             //Agregando core , en este orden porque si no no funciona
             app.UseCors(x=>x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             //Agregando la autenticacion de json token
