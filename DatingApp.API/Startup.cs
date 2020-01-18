@@ -20,6 +20,8 @@ using System.Net;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using DatingApp.API.Helpers;
+using AutoMapper;
+using DatingApp.API.Dtos;
 
 namespace DatingApp.API
 {
@@ -40,13 +42,30 @@ namespace DatingApp.API
             services.AddDbContext<DataContext>(x =>x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllers();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+           // Start Registering and Initializing AutoMapper
+
+   //services.AddAutoMapper(typeof(Startup));
+            ///////IMPORTANTE//////////// VERSION .NET CORE 3.0/////////////
+            //AGREGAR ESTA LINEA IMPORTANTISIMO////////
+            ///Esto se agrega para resolver el problema al momento de devolver la data en 
+            //el controlador de usuarios
+            services.AddMvc().AddJsonOptions(o =>
+                {
+                    o.JsonSerializerOptions.PropertyNamingPolicy = null;
+                    o.JsonSerializerOptions.DictionaryKeyPolicy = null;
+                });
             //agregando migracion
             services.AddTransient<Seed>();
             //agregando cabeceras cors para que permite que se consuma desde modo local
             services.AddCors();  
+            //REGISTRANDO EL AUTOMAPPER
+           // Auto Mapper Configurations
+            services.AddAutoMapper(typeof(DatingRepository).Assembly);
             //REgistrando servicio para injectar a los contralores el repositorio
             //Toma como parametero la interfaz y la clase de repositorio
             services.AddScoped<IAuthRepository, AuthRepository>();
+            //Agregando el repositorio de user
+            services.AddScoped<IDatingRepository, DatingRepository>();
             //agregando autenticacion 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options => {
@@ -83,7 +102,7 @@ namespace DatingApp.API
                 });
             }
             app.UseHttpsRedirection();
-         
+ 
             app.UseRouting();
             //agregando migracion
             //seeder.SeedUser(); //comentado para que no se este haciendo la migracion en cada momento
