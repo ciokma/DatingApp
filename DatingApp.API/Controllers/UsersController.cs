@@ -5,6 +5,8 @@ using DatingApp.API.Data;
 using DatingApp.API.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using System;
 
 namespace DatingApp.API.Controllers
 {
@@ -36,5 +38,25 @@ namespace DatingApp.API.Controllers
             var userToReturn = _mapper.Map<UserForDetailedDto>(user);
             return Ok(userToReturn);
         }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(int id, UserForUpdateDto userForUpdate)
+        {
+            //Validar que el token corresponda al usuario
+            if(id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            {
+                return Unauthorized();
+            }
+            var userFromRepo = await _repo.GetUser(id);
+            //mapiar los cambios dentro de la variable userFromRepo, para luego aplicar el guardado
+            //este codigo lo que hara es actualizar userFromRepo con los valores userForUpdate
+            _mapper.Map(userForUpdate, userFromRepo);
+            
+            if(await _repo.SaveAll())
+                return NoContent();
+            
+            //si  no se logro guardad se procede a notificar mediante una exepcion
+            throw new Exception($"Updating user {id} failed on save");
+        }
+
     }
 }

@@ -22,10 +22,10 @@ namespace DatingApp.API.Helpers
             */
             //2
             CreateMap<User, UserForDetailedDto>()
-            .ForMember(dest=>dest.PhotoUrl, opt=>{
+            .ForMember(dest=>dest.photoUrl, opt=>{
                 opt.MapFrom(src=>src.Photos.FirstOrDefault(p=>p.isMain).Url);
             })
-            .ForMember(d => d.Age, map => map.MapFrom((s,d) => s.DateOfBirth.CalculateAge()));
+            .ForMember(d => d.age, map => map.MapFrom((s,d) => s.DateOfBirth.CalculateAge()));
 
             /*.ForMember(dest => dest.PhotoUrl, opt=>{
                 opt.ResolveUsing(d=>d.DateOfBirth.CalculateAge());
@@ -33,6 +33,8 @@ namespace DatingApp.API.Helpers
             */
             //3
             CreateMap<Photo, PhotosForDetailedDto>();
+            //Mapear la clase de usuario que se encargara de actualizar los campos
+            CreateMap<UserForUpdateDto, User>();
         }
     }
 }
