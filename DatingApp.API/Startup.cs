@@ -58,6 +58,8 @@ namespace DatingApp.API
             services.AddTransient<Seed>();
             //agregando cabeceras cors para que permite que se consuma desde modo local
             services.AddCors();  
+            //REGISTRANDO CLOUDINARY PARA CONECTARSE AL SERVER DE FOTOS
+            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
             //REGISTRANDO EL AUTOMAPPER
            // Auto Mapper Configurations
             services.AddAutoMapper(typeof(DatingRepository).Assembly);

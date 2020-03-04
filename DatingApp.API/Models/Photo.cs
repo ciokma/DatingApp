@@ -8,6 +8,7 @@ namespace DatingApp.API.Data
         public string Description { get; set; }
         public DateTime DateAdded { get; set; }
         public bool isMain { get; set; }
+        public string PublicID { get; set; }
         public User User { get; set; }
         public int UserId { get; set; }
     }
