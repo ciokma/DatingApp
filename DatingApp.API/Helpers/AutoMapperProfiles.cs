@@ -11,10 +11,10 @@ namespace DatingApp.API.Helpers
         {
             //1
             CreateMap<User, UserForListDto>()
-            .ForMember(dest => dest.PhotoUrl, opt => {
+            .ForMember(dest => dest.photoUrl, opt => {
                 opt.MapFrom(src=>src.Photos.FirstOrDefault(p=>p.isMain).Url);
             })
-            .ForMember(d => d.Age, map => map.MapFrom((s,d) => s.DateOfBirth.CalculateAge()));
+            .ForMember(d => d.age, map => map.MapFrom((s,d) => s.DateOfBirth.CalculateAge()));
             /*
            .ForMember(dest => dest.PhotoUrl, opt=>{
                 opt.ResolveUsing(d=>d.DateOfBirth.CalculateAge());

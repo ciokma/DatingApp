@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using DatingApp.API.Data;
 using DatingApp.API.Dtos;
 using Microsoft.AspNetCore.Mvc;
@@ -19,9 +20,11 @@ namespace DatingApp.API.Controllers
         private readonly IAuthRepository _repo;
 
         public IConfiguration _config;
+        private readonly IMapper _mapper;
 
-        public AuthController(IAuthRepository repo, IConfiguration config)
+        public AuthController(IAuthRepository repo, IConfiguration config, IMapper mapper)
         {
+            _mapper = mapper;
             _repo = repo;
             _config = config;
         }
@@ -34,36 +37,36 @@ namespace DatingApp.API.Controllers
             */
 
             userForRegisterDto.Username = userForRegisterDto.Username.ToLower();
-            if(await _repo.UserExists(userForRegisterDto.Username))
+            if (await _repo.UserExists(userForRegisterDto.Username))
                 return BadRequest("Username already exists");
-            
+
             var userToCreate = new User
             {
                 UserName = userForRegisterDto.Username
             };
 
-            var createdUser =  await _repo.Register(userToCreate, userForRegisterDto.Password);
+            var createdUser = await _repo.Register(userToCreate, userForRegisterDto.Password);
             return StatusCode(201);
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserForLogin userlogin)
         {
-           // try{
-           //throw new Exception("Computers say no!");
-                   
-            userlogin.username= userlogin.username.ToLower();
+            // try{
+            //throw new Exception("Computers say no!");
+
+            userlogin.username = userlogin.username.ToLower();
             var userFromRepo = await _repo.Login(userlogin.username, userlogin.password);
 
-            if(userFromRepo == null)
-                return Unauthorized();  
-            
+            if (userFromRepo == null)
+                return Unauthorized();
+
             //Version 2.0 .net core
-            var claims = new [] 
+            var claims = new[]
             {
                 new Claim(ClaimTypes.NameIdentifier,userFromRepo.Id.ToString()),
                 new Claim(ClaimTypes.Name,userFromRepo.UserName)
             };
-        
+
             /*
              var claims = new []
              {
@@ -75,7 +78,7 @@ namespace DatingApp.API.Controllers
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:Token").Value));
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-           
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
@@ -87,9 +90,13 @@ namespace DatingApp.API.Controllers
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            
-            return Ok(new {
-                token = tokenHandler.WriteToken(token)
+
+            var user = _mapper.Map<UserForListDto>(userFromRepo);
+
+            return Ok(new
+            {
+                token = tokenHandler.WriteToken(token),
+                user
             });
             /*
             } catch{

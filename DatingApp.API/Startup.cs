@@ -109,7 +109,11 @@ namespace DatingApp.API
             //agregando migracion
             //seeder.SeedUser(); //comentado para que no se este haciendo la migracion en cada momento
             //Agregando core , en este orden porque si no no funciona
+            //VERSION ANTERIOR 
             app.UseCors(x=>x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            //VERSION NUEVA  PARA TRABAJAR CON LA GALERIA DE IMAGENES ES NECESARIO HABILITAR QUE PERMITA CREDENCIALES
+            //ESTO PODRIA DAR PROBLEMAS DE SEGURIDAD
+            //app.UseCors(x=>x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials());
             //Agregando la autenticacion de json token
             app.UseAuthentication();
             app.UseAuthorization();
