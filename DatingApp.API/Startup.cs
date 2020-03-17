@@ -79,7 +79,8 @@ namespace DatingApp.API
                     ValidateAudience = false
                 };
             });
-      
+            // Se agrega porque se registra una nueva instanacia para actualizar la fecha de usuario ultima actividad
+            services.AddScoped<LogUserActivity>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

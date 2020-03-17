@@ -7,9 +7,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System;
+using DatingApp.API.Helpers;
 
 namespace DatingApp.API.Controllers
 {
+    //Agregar el filtro para actualizar la fecha de ultima actividad
+    [ServiceFilter(typeof(LogUserActivity))]
     [Authorize]
     [ApiController] //Si esto se comenta entonces los valores vienen nulo del modelo al momento dde consumir un metodo de la api
     //[fromBody] sirve para que los valores no los traiga nulo
