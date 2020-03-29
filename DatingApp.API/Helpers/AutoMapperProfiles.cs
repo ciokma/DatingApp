@@ -39,6 +39,14 @@ namespace DatingApp.API.Helpers
             CreateMap<PhotoForCreationDto, Photo>();
             //automapper para el registro
             CreateMap<UserForRegisterDto, User>();
+            //reverse map se utiliza para no regresar toda la data del la tabla relacion
+            CreateMap<MessageForCreationDto, Message>().ReverseMap();
+            // AutoMapper para coincidencia
+             CreateMap<Message, MessageToReturnDto>()
+                .ForMember(m => m.SenderPhotoUrl, opt => opt
+                    .MapFrom(u => u.Sender.Photos.FirstOrDefault(p => p.isMain).Url))
+                .ForMember(m => m.RecipientPhotoUrl, opt => opt
+                    .MapFrom(u => u.Recipient.Photos.FirstOrDefault(p => p.isMain).Url));
         }
     }
 }
